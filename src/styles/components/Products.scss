@@ -1,0 +1,36 @@
+.products{
+    font-family: "Roboto", sans-serif;
+    margin: 60px 120px;
+    display: flex;
+    flex-direction: column;
+    gap: 60px;
+    &__header{
+        display: flex;
+        flex-direction: row;
+        gap: 30px;
+        align-items: center;
+        color: $main-color;
+    }
+    &__filter{
+        display: flex;
+        gap: 15px;
+        p{
+            font-weight: 600;
+            font-size: 14px;
+            color: $main-color;
+        }
+        select{
+            width: 300px;
+            font-size: 12px;
+            font-weight: 600;
+            color: $main-color;
+            border-radius: 5px;
+        }
+    }
+
+    &__list{
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+}

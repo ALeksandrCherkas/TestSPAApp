@@ -1,0 +1,27 @@
+.product-card{
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    background-color: #fff;
+    color: $main-color;
+    font-weight: inherit;
+    position: relative;
+    max-height: 80px;
+    justify-content: space-between;
+    padding: 10px 30px 10px 10px;
+    &__title{
+        h3{
+            font-size: 18px;
+            text-decoration: underline;
+        }
+        p{
+            color: #90a4ae;
+        }
+    }
+    img{
+        height: 100%;
+        width: auto;
+        max-width: 80px;
+        object-fit: cover;
+    }
+}
