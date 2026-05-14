@@ -24,6 +24,8 @@ const OrderCard = ({ order, isActive, isShort, onClick, onDelete }) => {
 
     const sumUSD = orderProducts.reduce((acc, p) => acc + (p.price.find(pr => pr.symbol ==='USD')?.value || 0), 0);
     const sumUAH = orderProducts.reduce((acc, p) => acc + (p.price.find(pr => pr.symbol ==='UAH')?.value || 0), 0);
+    const count = order.products.length;
+
     const handleDelete= (e) => {
         e.stopPropagation();
         onDelete();
@@ -36,7 +38,7 @@ const OrderCard = ({ order, isActive, isShort, onClick, onDelete }) => {
                 <div className="order-card__info-count">
                     <BsListUl className="order-card__icon"/>
                     <div className="order-card__count">
-                        <strong>{orderProducts.length}</strong>
+                        <strong>{count}</strong>
                         <span>Продукта</span>
                     </div>
                 </div>

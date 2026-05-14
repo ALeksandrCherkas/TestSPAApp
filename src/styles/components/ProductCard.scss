@@ -24,4 +24,11 @@
         max-width: 80px;
         object-fit: cover;
     }
+    &__delete{
+        border: none;
+        background-color: transparent;
+        cursor: pointer;
+        color: $main-color;
+        font-size: 16px;
+    }
 }

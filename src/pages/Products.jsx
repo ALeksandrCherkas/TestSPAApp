@@ -1,14 +1,15 @@
 import { useSelector } from 'react-redux';
 import ProductCard from '../components/ProductCard';
-import { deleteProduct } from '../store/productsStore';
+import { deleteProductAsync, fetchProducts } from '../store/productsStore';
 import { useDispatch } from 'react-redux';
-import { useState } from 'react';
+import { fetchOrders } from '../store/orderStore';
+import { useEffect, useState } from 'react';
 
 
 const Products = () => {
     const dispatch = useDispatch();
-    const products = useSelector((state)=> state.products.list);
-    const orders = useSelector((state)=> state.orders.list);
+    const products = useSelector((state)=> state.products.list) || [];
+    const orders = useSelector((state)=> state.orders.items) || [];
     
     const [filterType, setFilterType] = useState('all');
     const productTypes = [...new Set(products.map(p => p.type))];
@@ -17,9 +18,15 @@ const Products = () => {
 
     const handleDelete = (id) => {
         if (window.confirm("Вы уверены, что хотите удалить этот продукт?")) {
-            dispatch(deleteProduct(id));
+            dispatch(deleteProductAsync(id));
         }
     }
+    useEffect(()=> {
+        dispatch(fetchProducts());
+        if (orders.length === 0) {
+            dispatch(fetchOrders());
+        }
+    }, [dispatch])
     return (
         <section className='products'>
             <div className='products__header'>

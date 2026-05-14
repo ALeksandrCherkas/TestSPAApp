@@ -1,77 +1,73 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk} from '@reduxjs/toolkit';
 
-const initialProducts = [
-    {
-    id: 1,
-    serialNumber: 1234,
-    isNew: 1,
-    photo: 'pathToFile.jpg',
-    title: 'Длинное название продукта 1',
-    type: 'Monitors',
-    specification: 'Specification 1',
-    guarantee: {
-      start: '2017-06-29 12:09:33',
-      end: '2017-06-29 12:09:33'
-    },
-    price: [
-      {value: 100, symbol: 'USD', isDefault: 0},
-      {value: 2600, symbol: 'UAH', isDefault: 1}
-    ],
-    order: 1,
-    date: '2017-06-29 12:09:33'
-  },
-  {
-    id: 2,
-    serialNumber: 1234,
-    isNew: 1,
-    photo: 'pathToFile.jpg',
-    title: 'Длинное название продукта 2',
-    type: 'Monitors',
-    specification: 'Specification 1',
-    guarantee: {
-      start: '2017-06-29 12:09:33',
-      end: '2017-06-29 12:09:33'
-    },
-    price: [
-      {value: 100, symbol: 'USD', isDefault: 0},
-      {value: 2600, symbol: 'UAH', isDefault: 1}
-    ],
-    order: 2,
-    date: '2017-06-29 12:09:33'
-  },
-  {
-    id: 3,
-    serialNumber: 124536322,
-    isNew: 1,
-    photo: 'pathToFile.jpg',
-    title: 'Длинное название продукта 3',
-    type: 'Something else',
-    specification: 'Specification 1',
-    guarantee: {
-      start: '2017-06-29 12:09:33',
-      end: '2017-06-29 12:09:33'
-    },
-    price: [
-      {value: 100, symbol: 'USD', isDefault: 0},
-      {value: 2600, symbol: 'UAH', isDefault: 1}
-    ],
-    order: 2,
-    date: '2017-06-29 12:09:33'
+export const fetchProducts = createAsyncThunk(
+  'products/fetchProducts',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await fetch('http://localhost:3001/api/products');
+      if (!response.ok) {
+        throw new Error('Не удалось загрузить продукты');
+      }
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
   }
-];
+);
+
+export const deleteProductAsync = createAsyncThunk(
+  'products/deleteProductAsync',
+  async (productId, { rejectWithValue }) => {
+    try {
+      const response = await fetch(`http://localhost:3001/api/products/${productId}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        throw new Error('Не удалось удалить продукт на сервере');
+      }
+
+      return productId;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
 
 const productsSlice = createSlice({
   name: 'products',
   initialState: {
-    list: initialProducts,
+    list: [],
+    status: 'idle', 
+    error: null,
   },
   reducers: {
     deleteProduct: (state, action) => {
       state.list = state.list.filter(product => product.id !== action.payload);
     },
   },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchProducts.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(fetchProducts.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.list = action.payload; 
+      })
+      .addCase(fetchProducts.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload;
+      })
+      .addCase(deleteProductAsync.fulfilled, (state, action) => {
+        state.list = state.list.filter(product => product.id !== action.payload);
+      })
+      .addCase(deleteProductAsync.rejected, (state, action) => {
+        state.error = action.payload;
+      });
+  },
 });
 
-export const { deleteProduct } = productsSlice.actions;
 
 export default productsSlice.reducer;

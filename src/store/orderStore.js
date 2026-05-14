@@ -1,41 +1,45 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
-const initialOrders = [
-    {
-    id: 1,
-    title: 'Длинное название прихода 1',
-    date: '2017-06-29 12:09:33',
-    description: 'desc',
-    products: [1, 2]
-  },
-  {
-    id: 2,
-    title: 'Длинное название прихода 2',
-    date: '2017-06-29 12:09:33',
-    description: 'desc',
-    products: [2]
-  },
-  {
-    id: 3,
-    title: 'Длинное название прихода 3',
-    date: '2017-06-29 12:09:33',
-    description: 'desc',
-    products: [1]
+
+export const deleteOrderAsync = createAsyncThunk(
+  'orders/deleteOrder', 
+  async (orderId, { rejectWithValue }) => {
+    try {
+      const response = await fetch(`http://localhost:3001/api/orders/${orderId}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) {
+        throw new Error('Failed to delete order');
+      }
+      return orderId;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
   }
-];
+);
+
+export const fetchOrders = createAsyncThunk('orders/fetchOrders', async () => {
+    const response = await fetch('http://localhost:3001/api/orders');
+    if (!response.ok) throw new Error('Failed to fetch orders');
+    return await response.json();
+});
 
 const ordersSlice = createSlice({
   name: 'orders',
-  initialState: {
-    list: initialOrders,
-  },
+  initialState: { items: [], status: 'idle' },
   reducers: {
-    deleteOrder: (state, action) => {
-      state.list = state.list.filter(order => order.id !== action.payload);
-    },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchOrders.fulfilled, (state, action) => {
+        state.items = action.payload; 
+        state.status = 'succeeded';
+      })
+      .addCase(deleteOrderAsync.fulfilled, (state, action) => {
+        state.items = state.items.filter(order => order.id !== action.payload);
+      });
   },
 });
 
-export const { deleteOrder } = ordersSlice.actions;
 
 export default ordersSlice.reducer;

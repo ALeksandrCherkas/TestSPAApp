@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: inventory_db
+    restart: always
+    environment:
+      MYSQL_DATABASE: inventory_db
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+
+  backend:
+    build: .
+    container_name: inventory_api
+    restart: always
+    ports:
+      - "3001:3001"
+    environment:
+      DB_HOST: db
+      DB_USER: root
+      DB_PASSWORD: root
+      DB_NAME: inventory_db
+      PORT: 3001
+
+    command: node server.js
+    depends_on:
+      - db
+
+  frontend:
+    build: .
+    container_name: inventory_ui
+    ports:
+      - "3000:3000"
+    stdin_open: true
+    tty: true
+   
+    command: npm start
+    depends_on:
+      - backend
+
+volumes:
+  db_data:
