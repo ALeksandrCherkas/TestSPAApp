@@ -48,7 +48,7 @@ const Products = () => {
 
             <div className='products__list'>
                 {filteredProducts.map((product) => {
-                        const order = orders.find(order => order.id === product.order);
+                        const order = orders.find(order => order.products && order.products.some(p => p.id === product.id))
                         return (
                             <ProductCard 
                                 key={product.id} 

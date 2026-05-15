@@ -22,8 +22,14 @@ const OrderCard = ({ order, isActive, isShort, onClick, onDelete }) => {
     const allProducts = useSelector((state) => state.products.list);
     const orderProducts = allProducts.filter(p => order.products.includes(p.id));
 
-    const sumUSD = orderProducts.reduce((acc, p) => acc + (p.price.find(pr => pr.symbol ==='USD')?.value || 0), 0);
-    const sumUAH = orderProducts.reduce((acc, p) => acc + (p.price.find(pr => pr.symbol ==='UAH')?.value || 0), 0);
+    const sumUSD = order.products?.reduce((acc, p) => {
+        const priceObj = p.price.find(pr => pr.symbol === 'USD');
+        return acc + (Number(priceObj?.value) || 0);
+    }, 0) || 0;
+    const sumUAH = order.products?.reduce((acc, p) => {
+        const priceObj = p.price.find(pr => pr.symbol === 'UAH');
+        return acc + (Number(priceObj?.value) || 0);
+    }, 0) || 0;
     const count = order.products.length;
 
     const handleDelete= (e) => {

@@ -16,7 +16,7 @@ const formatHeaderDate = (date) => {
 
   return `${day} ${month}, ${year}`;
 };
-const socket = io();
+const socket = io('http://localhost:3001');
 
 const TopMenu = () => {
     const [sessions, setSessions] = useState(0);
