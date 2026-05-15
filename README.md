@@ -1,70 +1,65 @@
-# Getting Started with Create React App
+#Проект содержит следующие функции:
+1. Отображение товаров и заказов из БД
+2. Удаление товаров и заказов
+3. Real-time отображение времени и акативных сессий
+4. Реализация фильтра по типам продуктов 
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+#Запуск проекта:
+1. git clone https://github.com/ALeksandrCherkas/TestSPAApp.git
+2. cd TestSPAApp
+3. docker-compose up --build
+4. Приложение будет доступно по адресам:
+  -Frontend: http://localhost:3000 — основная страница.
+  -Backend API: http://localhost:3001 — сервер сокетов и API.
 
-## Available Scripts
+#Данные
+Проект использует реляционную структуру для управления заказами и продуктами. Основная логика построена на связи многие-ко-многим (один заказ может содержать много продуктов, один продукт может быть в разных заказах).
+Для создания необходимых таблиц к сайту, необходимо выполнить эти команды в MySQL:
+CREATE TABLE IF NOT EXISTS `products` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `serial` VARCHAR(45) NOT NULL,
+  `isNew` TINYINT NULL,
+  `photo` VARCHAR(100) NULL,
+  `title` VARCHAR(45) NULL,
+  `type` VARCHAR(45) NULL,
+  `guarantee_start` DATETIME NULL,
+  `guarantee_end` DATETIME NULL,
+  `price_usd` DECIMAL(10,2) NULL,
+  `price_uah` DECIMAL(10,2) NULL,
+  `date` DATETIME NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE)
+ENGINE = InnoDB;
 
-In the project directory, you can run:
+CREATE TABLE IF NOT EXISTS `orders` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `title` VARCHAR(45) NOT NULL,
+  `date` DATETIME NULL,
+  `description` LONGTEXT NULL,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB;
 
-### `npm start`
+CREATE TABLE IF NOT EXISTS `order_items` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `order_id` INT NULL,
+  `product_id` INT NULL,
+  `order_itemscol` VARCHAR(45) NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_order_idx` (`order_id` ASC) VISIBLE,
+  INDEX `fk_product_idx` (`product_id` ASC) VISIBLE,
+  CONSTRAINT `fk_order`
+    FOREIGN KEY (`order_id`)
+    REFERENCES `orders` (`id`)
+    ON DELETE CASCADE 
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_product`
+    FOREIGN KEY (`product_id`)
+    REFERENCES `products` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
 
-### `npm test`
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
