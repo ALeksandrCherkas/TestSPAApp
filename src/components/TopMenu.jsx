@@ -13,19 +13,21 @@ const formatHeaderDate = (date) => {
   const day = String(date.getDate()).padStart(2, '0');
   const month = months[date.getMonth()];
   const year = date.getFullYear();
-
   return `${day} ${month}, ${year}`;
 };
-const socket = io('http://localhost:3001');
 
+const socket = io("http://localhost:3001", {
+  transports: ['websocket'],
+  withCredentials: true,
+});
 const TopMenu = () => {
     const [sessions, setSessions] = useState(0);
     const [date, setNowDate] = useState(new Date());
     useEffect(() => {
-        socket.on('activeSessions', (activeSessions) => {
-            setSessions(activeSessions);
+        socket.on('activeSessions', (count) => {
+          console.log(count);
+            setSessions(count);
         });
-
         const timer = setInterval(() => {
             setNowDate(new Date());
         }, 1000);

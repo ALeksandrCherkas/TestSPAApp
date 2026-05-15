@@ -9,12 +9,31 @@ const cors = require('cors');
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
-    cors: {origin: "*"}
+  cors: {
+    origin: "http://localhost:3000",
+    methods: ["GET", "POST"],
+    credentials: true
+  }
 });
+let activeSockets = new Set(); 
+
+io.on('connection', (socket) => {
+    activeSockets.add(socket.id); 
+
+    io.emit('activeSessions', activeSockets.size);
+    
+    console.log(`User connected: ${socket.id}. Total unique: ${activeSockets.size}`);
+
+    socket.on('disconnect', () => {
+        activeSockets.delete(socket.id); 
+        io.emit('activeSessions', activeSockets.size);
+        console.log(`User disconnected. Total unique: ${activeSockets.size}`);
+    });
+});
+
 app.use(cors())
 
 app.use(express.static(path.join(__dirname, 'build')));
-let activeSessions = 0;
 
 app.get('/api/orders', async (req, res) => {
     try {
@@ -92,17 +111,6 @@ app.delete('/api/products/:id', async (req, res) => {
 });
 
 
-
-
-io.on('connection', (socket) => {
-    activeSessions++;
-    io.emit('activeSessions', activeSessions);
-
-    socket.on('disconnect', () => {
-        activeSessions--;
-        io.emit('activeSessions', activeSessions);
-    });
-})
 
 app.get(/^(?!\/api).+/, (req, res) => {
   res.sendFile(path.join(__dirname, 'build', 'index.html'));
