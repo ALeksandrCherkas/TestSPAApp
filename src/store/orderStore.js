@@ -5,7 +5,7 @@ export const deleteOrderAsync = createAsyncThunk(
   'orders/deleteOrder', 
   async (orderId, { rejectWithValue }) => {
     try {
-      const response = await fetch(`http://localhost:3001/api/orders/${orderId}`, {
+      const response = await fetch(`http://35.209.214.95:3001/api/orders/${orderId}`, {
         method: 'DELETE',
       });
       if (!response.ok) {

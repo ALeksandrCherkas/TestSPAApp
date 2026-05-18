@@ -10,13 +10,23 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: ["http://localhost:3000", "http://127.0.0.1:3000", "http://localhost:3001"], 
+    origin: ["http://localhost:3000", 
+      "http://127.0.0.1:3000", 
+      "http://localhost:3001",
+      "http://35.209.214.95:3000"],
     methods: ["GET", "POST"],
     credentials: true
   }
 });
 
-app.use(cors());
+app.use(cors({
+  origin: [
+    "http://localhost:3000", 
+    "http://localhost:3001",
+    "http://35.209.214.95:3000" 
+  ],
+  credentials: true
+}));
 app.use(express.json()); 
 
 
