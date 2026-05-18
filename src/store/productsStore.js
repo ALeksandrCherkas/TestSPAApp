@@ -20,7 +20,7 @@ export const deleteProductAsync = createAsyncThunk(
   'products/deleteProductAsync',
   async (productId, { rejectWithValue }) => {
     try {
-      const response = await fetch(`http://localhost:3001/api/products/${productId}`, {
+      const response = await fetch(`http://35.209.214.95:3001/api/products/${productId}`, {
         method: 'DELETE',
       });
 
