@@ -1,29 +1,14 @@
-FROM node:20-alpine AS build-stage
+FROM nginx:alpine
 
-WORKDIR /app
+# Копируем собранную на твоем ПК папку build внутрь Nginx
+COPY build /usr/share/nginx/html
 
-COPY package*.json ./
-RUN npm install --legacy-peer-deps
-
-COPY . .
-RUN npm run build
-
-FROM node:20-alpine
-
-WORKDIR /app
-
-COPY package*.json ./
-
-RUN npm install --omit=dev --legacy-peer-deps --no-audit --no-fund
-
-COPY --from=build-stage /app/build ./build
-
-COPY server.js ./
-COPY bd.js ./
-
-ENV NODE_ENV=production
+# Открываем порт 3000
 EXPOSE 3000
 
-CMD ["node", "server.js"]
+# Настраиваем Nginx на работу с портом 3000 вместо дефолтного 80
+RUN sed -i 's/listen[:[:space:]]*80;/listen 3000;/g' /etc/nginx/conf.d/default.conf
+
+CMD ["nginx", "-g", "daemon off;"]
 
 

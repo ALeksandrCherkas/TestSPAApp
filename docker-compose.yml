@@ -1,25 +1,7 @@
-version: '3.8'
-
-services:
-  db:
-    image: mysql:8.0
-    container_name: inventory_db
-    restart: always
-    environment:
-      MYSQL_DATABASE: inventory_db
-      MYSQL_ROOT_PASSWORD: root
-    ports:
-      - "3306:3306"
-    volumes:
-      - db_data:/var/lib/mysql
-    deploy:
-      resources:
-        limits:
-          cpus: '0.50'
-          memory: 512M
-
-  backend:
-    build: .
+backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
     container_name: inventory_api
     restart: always
     ports:
@@ -30,8 +12,6 @@ services:
       DB_PASSWORD: root
       DB_NAME: inventory_db
       PORT: 3001
-
-    command: npm run start
     depends_on:
       - db
     deploy:
@@ -41,24 +21,17 @@ services:
           memory: 256M
 
   frontend:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
     container_name: inventory_ui
+    restart: always
     ports:
       - "3000:3000"
-    stdin_open: true
-    tty: true
-    environment:
-      - PORT=3000
-      - HOST=0.0.0.0             
-      - WDS_SOCKET_PORT=0       
-    command: npm start
     depends_on:
       - backend
     deploy:
       resources:
         limits:
-          cpus: '0.50'
-          memory: 512M
-
-volumes:
-  db_data:
+          cpus: '0.25'
+          memory: 64M
