@@ -20,18 +20,18 @@ backend:
           cpus: '0.50'
           memory: 256M
 
-  frontend:
-    build:
-      context: .
-      dockerfile: Dockerfile.frontend
-    container_name: inventory_ui
-    restart: always
-    ports:
-      - "3000:3000"
-    depends_on:
-      - backend
-    deploy:
-      resources:
-        limits:
-          cpus: '0.25'
-          memory: 64M
+frontend:
+  build:
+    context: .
+    dockerfile: Dockerfile.frontend
+  container_name: inventory_ui
+  restart: always
+  ports:
+    - "3000:3000"
+  depends_on:
+    - backend
+  deploy:
+    resources:
+      limits:
+        cpus: '0.25'
+        memory: 64M
