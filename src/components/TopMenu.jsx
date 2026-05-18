@@ -16,7 +16,7 @@ const formatHeaderDate = (date) => {
   return `${day} ${month}, ${year}`;
 };
 
-const socket = io("http://localhost:3001", {
+const socket = io("http://localhost:3000", {
   transports: ['websocket'],
   withCredentials: true,
 });

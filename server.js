@@ -1,27 +1,30 @@
 const express = require('express');
 const path = require('path');
 const http = require('http');
-const {Server} = require('socket.io');
-const db = require('./bd');
+const { Server } = require('socket.io');
+const db = require('./bd'); 
 const cors = require('cors');
-
 
 const app = express();
 const server = http.createServer(app);
+
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: ["http://localhost:3000", "http://127.0.0.1:3000", "http://localhost:3001"], 
     methods: ["GET", "POST"],
     credentials: true
   }
 });
+
+app.use(cors());
+app.use(express.json()); 
+
+
 let activeSockets = new Set(); 
 
 io.on('connection', (socket) => {
     activeSockets.add(socket.id); 
-
     io.emit('activeSessions', activeSockets.size);
-    
     console.log(`User connected: ${socket.id}. Total unique: ${activeSockets.size}`);
 
     socket.on('disconnect', () => {
@@ -31,13 +34,9 @@ io.on('connection', (socket) => {
     });
 });
 
-app.use(cors())
-
-app.use(express.static(path.join(__dirname, 'build')));
 
 app.get('/api/orders', async (req, res) => {
     try {
-
         const [rows] = await db.execute(`
             SELECT o.*, p.id as p_id, p.title as p_title, p.price_usd, p.price_uah, p.serial
             FROM orders o
@@ -71,6 +70,7 @@ app.get('/api/orders', async (req, res) => {
         res.status(500).json({ message: "Ошибка сервера при чтении БД" });
     }
 });
+
 app.delete('/api/orders/:id', async (req, res) => {
     try {
         const { id } = req.params;
@@ -81,7 +81,6 @@ app.delete('/api/orders/:id', async (req, res) => {
         res.status(500).json({ message: "Ошибка при удалении заказа" });
     }
 });
-
 
 app.get('/api/products', async (req, res) => {
     try {
@@ -96,7 +95,6 @@ app.delete('/api/products/:id', async (req, res) => {
   const { id } = req.params;
   try {
     await db.query('DELETE FROM order_items WHERE product_id = ?', [id]);
-    
     const [result] = await db.query('DELETE FROM products WHERE id = ?', [id]);
 
     if (result.affectedRows === 0) {
@@ -110,13 +108,13 @@ app.delete('/api/products/:id', async (req, res) => {
   }
 });
 
-
+app.use(express.static(path.join(__dirname, 'build')));
 
 app.get(/^(?!\/api).+/, (req, res) => {
   res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
