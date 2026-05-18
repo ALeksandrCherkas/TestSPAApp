@@ -19,7 +19,7 @@ export const deleteOrderAsync = createAsyncThunk(
 );
 
 export const fetchOrders = createAsyncThunk('orders/fetchOrders', async () => {
-    const response = await fetch('http://localhost:3001/api/orders');
+    const response = await fetch('http://35.209.214.95:3001/api/orders');
     if (!response.ok) throw new Error('Failed to fetch orders');
     return await response.json();
 });
