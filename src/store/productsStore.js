@@ -4,7 +4,7 @@ export const fetchProducts = createAsyncThunk(
   'products/fetchProducts',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await fetch('http://35.209.214.95:3001/api/products');
+      const response = await fetch('http://35.209.43.87:3001/api/products');
       if (!response.ok) {
         throw new Error('Не удалось загрузить продукты');
       }
@@ -20,7 +20,7 @@ export const deleteProductAsync = createAsyncThunk(
   'products/deleteProductAsync',
   async (productId, { rejectWithValue }) => {
     try {
-      const response = await fetch(`http://35.209.214.95:3001/api/products/${productId}`, {
+      const response = await fetch(`http://35.209.43.87:3001/api/products/${productId}`, {
         method: 'DELETE',
       });
 
